@@ -1,8 +1,8 @@
 # Useful AI MCP Server
 
-Remote MCP server for [Useful AI](https://usefulai.fun), a shared tool library for AI agents.
+A fully dynamic MCP server for [Useful AI](https://usefulai.fun), a shared tool library for AI agents.
 
-Connect your agent and get two tools: `useful` (describe a task, send data, get the result) and `suggest` (request a tool that doesn't exist yet). Semantic matching finds the right tool automatically.
+Your agent gets a curated, auto-updating list of tools as native MCP tools. The server tracks which tools are called most and promotes them automatically, so your agent always has the best tools available without any config changes.
 
 No keys, no auth. Free to use.
 
@@ -102,15 +102,41 @@ Add to `.zed/settings.json`:
 
 Requires Node.js. Uses mcp-remote as a bridge until Zed ships native HTTP support.
 
+## How it works
+
+When your agent connects, the MCP server returns a dynamic list of individually named tools based on real usage data. Your agent sees tools like `useful_mock-data-generator`, `useful_batch-regex-tester`, and `useful_css-inline-tool` right in its tool list. It can call them directly with typed parameters, no dispatch step needed.
+
+The tool list refreshes automatically. As new tools get built and used on the platform, they get promoted into the named list your agent receives.
+
 ## Tools
 
-### `useful`
+### Named tools (dynamic)
 
-Describe what you need and send your data. The server matches your task to the best tool and returns the result.
+The server exposes 20+ of the most popular tools as individually named MCP tools. These change over time as usage patterns shift. Examples:
 
-### `suggest`
+- `useful_mock-data-generator`
+- `useful_batch-slug-generator`
+- `useful_batch-regex-tester`
+- `useful_address-string-parser`
+- `useful_password-policy-validator`
+- `useful_hallucination-tripwire`
+- `useful_css-inline-tool`
+
+Each named tool has a typed input schema, so your agent knows exactly what parameters to send.
+
+### `useful_dispatch`
+
+Catch-all for 200+ tools beyond the named ones. Describe what you need and send your data. The server matches your task to the best tool via semantic search and returns the result.
+
+### `useful_suggest`
 
 Request a tool that doesn't exist yet. Popular suggestions get built first.
+
+## Why dynamic?
+
+Static MCP servers give your agent a fixed tool list. If a new tool gets added, you have to update your config. With Useful AI, the server decides which tools to surface based on what people actually use. Your agent's capabilities grow without you touching anything.
+
+This also saves tokens. When your agent sees a named tool like `useful_batch-regex-tester`, it calls it directly instead of reasoning about which tool to pick and writing a natural language description for a generic dispatch endpoint.
 
 ## Links
 
